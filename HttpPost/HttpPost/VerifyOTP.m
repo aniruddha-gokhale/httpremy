@@ -8,6 +8,7 @@
 
 #import "VerifyOTP.h"
 #import "restAPI.h"
+#import "Contacts.h"
 
 @interface VerifyOTP ()<restAPIDelegate>
 
@@ -18,9 +19,13 @@
 
 @implementation VerifyOTP
 
+NSString *PId;
+NSString *status;
+
 @synthesize numberlabel;
 @synthesize number;
 @synthesize receivedId;
+
 
 
 - (void)viewDidLoad {
@@ -45,6 +50,17 @@
     return _restApi;
 }
 
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+    
+    if ([segue.identifier isEqualToString:@"gotocontacts"]) {
+        
+        
+        Contacts *destViewController = segue.destinationViewController;
+        destViewController.PId=PId;
+        
+    }
+    
+}
 -(void)httppostrequest
 {
     NSString *Id=receivedId;
@@ -67,7 +83,12 @@
     
     NSError *error=nil;
     NSDictionary *receiveddata = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+    PId=[receiveddata objectForKey:@"id"];
+    status=[receiveddata objectForKey:@"status"];
     
+    if ([status isEqualToString:@"Success"]) {
+        [self performSegueWithIdentifier:@"gotocontacts" sender:self];
+    }
 }
 
 
